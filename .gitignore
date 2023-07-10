@@ -1,0 +1,4 @@
+results
+examples
+__pycache__/
+*.py[cod]
