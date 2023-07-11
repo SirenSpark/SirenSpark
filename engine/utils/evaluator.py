@@ -100,6 +100,7 @@ def eval_mapping(mapping, df, types=None, properties=None):
                 lambda *row: eval_row(mapping[key], row), StringType())
             df = df.withColumn(key, my_udf(*df))
 
+        cols = list(df.columns)
         for col in cols:
             if col not in mapping:
                 df = df.drop(col)
