@@ -1,0 +1,42 @@
+{
+  "properties": {
+    "name": "CSV2JSON",
+    "description": "",
+    "parameters": {}
+  },
+  "trigger": {
+    "id": "creator_1",
+    "type": "creator",
+    "output": {
+      "success": [
+        "CSVReader_1"
+      ]
+    }
+  },
+  "steps": [
+    {
+      "id": "CSVReader_1",
+      "type": "CSVReader",
+      "options": {
+        "filepath": "samples/csv2json/input.csv",
+        "header": true,
+        "delimiter": ","
+      },
+      "output": {
+        "success": ["JSONFileWriter_1"],
+        "error": []
+      }
+    },
+    {
+      "id": "JSONFileWriter_1",
+      "type": "JSONFileWriter",
+      "options": {
+        "filepath": "samples/csv2json/result.json"
+      },
+      "output": {
+        "success": [],
+        "error": []
+      }
+    }
+  ]
+}

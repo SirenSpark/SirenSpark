@@ -1,0 +1,42 @@
+{
+  "properties": {
+    "name": "Shapefile2JSON",
+    "description": "",
+    "parameters": {
+      "id_com": 66000
+    }
+  },
+  "trigger": {
+    "id": "creator_1",
+    "type": "creator",
+    "output": {
+      "success": [
+        "ShapefileReader_1"
+      ]
+    }
+  },
+  "steps": [
+    {
+      "id": "ShapefileReader_1",
+      "type": "ShapefileReader",
+      "options": {
+        "filepath": "samples/shapefile2json/input/ZONE_URBA.shp"
+      },
+      "output": {
+        "success": ["JSONFileWriter_1"],
+        "error": []
+      }
+    },
+    {
+      "id": "JSONFileWriter_1",
+      "type": "JSONFileWriter",
+      "options": {
+        "filepath": "samples/shapefile2json/result.json"
+      },
+      "output": {
+        "success": [],
+        "error": []
+      }
+    }
+  ]
+}
