@@ -6,3 +6,4 @@ lxml
 psycopg2
 gdal
 ogr
+pandas

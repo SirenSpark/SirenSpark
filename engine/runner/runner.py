@@ -10,6 +10,7 @@ from readers.csv_reader import CSVReader
 from readers.xml_reader import XMLReader
 from readers.shapefile_reader import ShapefileReader
 from writers.postgis_writer import PostgisWriter
+from writers.json_file_writer import JSONFileWriter
 from transformers.attribute_creator import AttributeCreator
 from transformers.attribute_mapper import AttributeMapper
 from transformers.joiner import Joiner
@@ -86,6 +87,9 @@ class Runner:
                 df=curr_df, properties=self.properties, **step.options).run()
         elif step.type == 'PostgisWriter':
             df, types, output = PostgisWriter(
+                df=curr_df, types=curr_types, **step.options).run()
+        elif step.type == 'JSONFileWriter':
+            df, types, output = JSONFileWriter(
                 df=curr_df, types=curr_types, **step.options).run()
         elif step.type == 'Joiner':
             if ("left" in step.input and

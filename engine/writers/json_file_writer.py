@@ -1,25 +1,27 @@
-"""
-JSONWriter
-Ecrit un dataframe Spark dans un fichier JSON
-"""
-from pyspark.sql import DataFrame, DataFrameWriter
-import glob
-import shutil
+from pyspark.sql import DataFrame
+from model_base import BaseStep
+from typing import Dict, Any, Optional
+
+
+class JSONFileWriterStep(BaseStep):
+    type = "JSONFileWriter"
+    options: Dict[str, Any] = {
+        "filepath": str
+    }
 
 
 class JSONFileWriter:
-    def __init__(self, df: DataFrame, filepath: str):
+    def __init__(self, df: DataFrame, types, filepath: str):
         self.df = df
+        self.types = types
         self.filepath = filepath
 
     def run(self):
-        # write DataFrame to JSON file
-        tmpFolder = self.filepath + '_tmp'
-        writer = DataFrameWriter(self.df.coalesce(1))
-        writer.option("header", True).mode("overwrite").json(tmpFolder)
 
-        # Mise en forme
-        json_files = glob.glob(tmpFolder + '/*.json')
-        if len(json_files) == 1:
-            shutil.move(json_files[0], self.filepath)
-            shutil.rmtree(tmpFolder)
+        pandas_df = self.df.toPandas()
+        json_data = pandas_df.to_json(orient='records')
+
+        with open(self.filepath, 'w') as file:
+            file.write(json_data)
+
+        return self.df, self.types, 'success'
