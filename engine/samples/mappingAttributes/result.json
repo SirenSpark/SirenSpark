@@ -1,0 +1,236 @@
+[
+  {
+    "Artist name": "USA",
+    "Record company": "10.90$",
+    "Country": "1985",
+    "Price": "Bob Dylan",
+    "CD Title": "Columbia",
+    "Year": null,
+    "Concat": "Columbia - Bob Dylan - 1985"
+  },
+  {
+    "Artist name": "UK",
+    "Record company": "9.90$",
+    "Country": "1988",
+    "Price": "Bonnie Tyler",
+    "CD Title": "CBS Records",
+    "Year": null,
+    "Concat": "CBS Records - Bonnie Tyler - 1988"
+  },
+  {
+    "Artist name": "USA",
+    "Record company": "9.90$",
+    "Country": "1982",
+    "Price": "Dolly Parton",
+    "CD Title": "RCA",
+    "Year": null,
+    "Concat": "RCA - Dolly Parton - 1982"
+  },
+  {
+    "Artist name": "UK",
+    "Record company": "10.20$",
+    "Country": "1990",
+    "Price": "Gary Moore",
+    "CD Title": "Virgin records",
+    "Year": null,
+    "Concat": "Virgin records - Gary Moore - 1990"
+  },
+  {
+    "Artist name": "EU",
+    "Record company": "9.90$",
+    "Country": "1997",
+    "Price": "Eros Ramazzotti",
+    "CD Title": "BMG",
+    "Year": null,
+    "Concat": "BMG - Eros Ramazzotti - 1997"
+  },
+  {
+    "Artist name": "UK",
+    "Record company": "10.90$",
+    "Country": "1998",
+    "Price": "Bee Gees",
+    "CD Title": "Polydor",
+    "Year": null,
+    "Concat": "Polydor - Bee Gees - 1998"
+  },
+  {
+    "Artist name": "UK",
+    "Record company": "8.10$",
+    "Country": "1973",
+    "Price": "Dr.Hook",
+    "CD Title": "CBS",
+    "Year": null,
+    "Concat": "CBS - Dr.Hook - 1973"
+  },
+  {
+    "Artist name": "UK",
+    "Record company": "8.50$",
+    "Country": "1990",
+    "Price": "Rod Stewart",
+    "CD Title": "Pickwick",
+    "Year": null,
+    "Concat": "Pickwick - Rod Stewart - 1990"
+  },
+  {
+    "Artist name": "EU",
+    "Record company": "10.80$",
+    "Country": "1996",
+    "Price": "Andrea Bocelli",
+    "CD Title": "Polydor",
+    "Year": null,
+    "Concat": "Polydor - Andrea Bocelli - 1996"
+  },
+  {
+    "Artist name": "USA",
+    "Record company": "8.70$",
+    "Country": "1987",
+    "Price": "Percy Sledge",
+    "CD Title": "Atlantic",
+    "Year": null,
+    "Concat": "Atlantic - Percy Sledge - 1987"
+  },
+  {
+    "Artist name": "EU",
+    "Record company": "10.90$",
+    "Country": "1995",
+    "Price": "Savage Rose",
+    "CD Title": "Mega",
+    "Year": null,
+    "Concat": "Mega - Savage Rose - 1995"
+  },
+  {
+    "Artist name": "USA",
+    "Record company": "10.20$",
+    "Country": "1999",
+    "Price": "Many",
+    "CD Title": "Grammy",
+    "Year": null,
+    "Concat": "Grammy - Many - 1999"
+  },
+  {
+    "Artist name": "UK",
+    "Record company": "8.70$",
+    "Country": "1995",
+    "Price": "Kenny Rogers",
+    "CD Title": "Mucik Master",
+    "Year": null,
+    "Concat": "Mucik Master - Kenny Rogers - 1995"
+  },
+  {
+    "Artist name": "USA",
+    "Record company": "9.90$",
+    "Country": "1997",
+    "Price": "Will Smith",
+    "CD Title": "Columbia",
+    "Year": null,
+    "Concat": "Columbia - Will Smith - 1997"
+  },
+  {
+    "Artist name": "UK",
+    "Record company": "8.20$",
+    "Country": "1971",
+    "Price": "Van Morrison",
+    "CD Title": "Polydor",
+    "Year": null,
+    "Concat": "Polydor - Van Morrison - 1971"
+  },
+  {
+    "Artist name": "Norway",
+    "Record company": "7.90$",
+    "Country": "1996",
+    "Price": "Jorn Hoel",
+    "CD Title": "WEA",
+    "Year": null,
+    "Concat": "WEA - Jorn Hoel - 1996"
+  },
+  {
+    "Artist name": "UK",
+    "Record company": "8.90$",
+    "Country": "1990",
+    "Price": "Cat Stevens",
+    "CD Title": "Island",
+    "Year": null,
+    "Concat": "Island - Cat Stevens - 1990"
+  },
+  {
+    "Artist name": "UK",
+    "Record company": "8.90$",
+    "Country": "1988",
+    "Price": "Sam Brown",
+    "CD Title": "A and M",
+    "Year": null,
+    "Concat": "A and M - Sam Brown - 1988"
+  },
+  {
+    "Artist name": "UK",
+    "Record company": "7.90$",
+    "Country": "1987",
+    "Price": "T'Pau",
+    "CD Title": "Siren",
+    "Year": null,
+    "Concat": "Siren - T'Pau - 1987"
+  },
+  {
+    "Artist name": "UK",
+    "Record company": "8.90$",
+    "Country": "1983",
+    "Price": "Tina Turner",
+    "CD Title": "Capitol",
+    "Year": null,
+    "Concat": "Capitol - Tina Turner - 1983"
+  },
+  {
+    "Artist name": "EU",
+    "Record company": "7.80$",
+    "Country": "1983",
+    "Price": "Kim Larsen",
+    "CD Title": "Medley",
+    "Year": null,
+    "Concat": "Medley - Kim Larsen - 1983"
+  },
+  {
+    "Artist name": "UK",
+    "Record company": "9.90$",
+    "Country": "1991",
+    "Price": "Luciano Pavarotti",
+    "CD Title": "DECCA",
+    "Year": null,
+    "Concat": "DECCA - Luciano Pavarotti - 1991"
+  },
+  {
+    "Artist name": "USA",
+    "Record company": "7.90$",
+    "Country": "1968",
+    "Price": "Otis Redding",
+    "CD Title": "Stax Records",
+    "Year": null,
+    "Concat": "Stax Records - Otis Redding - 1968"
+  },
+  {
+    "Artist name": "EU",
+    "Record company": "7.20$",
+    "Country": "1985",
+    "Price": "Simply Red",
+    "CD Title": "Elektra",
+    "Year": null,
+    "Concat": "Elektra - Simply Red - 1985"
+  },
+  {
+    "Artist name": "UK",
+    "Record company": "7.80$",
+    "Country": "1987",
+    "Price": "The Communards",
+    "CD Title": "London",
+    "Year": null,
+    "Concat": "London - The Communards - 1987"
+  },
+  {
+    "Artist name": "USA",
+    "Record company": "8.20$",
+    "Country": "1987",
+    "Price": "Joe Cocker",
+    "CD Title": "EMI",
+    "Year": null,
+    "Concat": "EMI - Joe Cocker - 1987"
+  }
+]

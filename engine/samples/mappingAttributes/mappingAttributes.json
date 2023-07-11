@@ -1,0 +1,85 @@
+{
+  "properties": {
+    "name": "XML Reader, mapping and JSON writer",
+    "description": "",
+    "parameters": {}
+  },
+  "trigger": {
+    "id": "creator_1",
+    "type": "creator",
+    "output": {
+      "success": [
+        "XMLReader_1"
+      ]
+    }
+  },
+  "steps": [
+    {
+      "id": "XMLReader_1",
+      "type": "XMLReader",
+      "options": {
+        "filepath": "samples/mappingAttributes/cdCatalog.xml",
+        "xpath": "//CD"
+      },
+      "output": {
+        "success": ["AttributeMapper_1"],
+        "error": []
+      }
+    },
+    {
+      "id": "AttributeMapper_1",
+      "type": "AttributeMapper",
+      "options": {
+        "mapping": {
+          "Artist name": "{{data.ARTIST}}",
+          "Record company": "{{data.COMPANY}}",
+          "Country": "{{data.COUNTRY}}",
+          "Price": "{{data.PRICE}}$",
+          "CD Title": "{{data.TITLE}}",
+          "Year": "{{data.YEAR}}",
+          "Concat": "{{data.COMPANY}} - {{data.ARTIST}} - {{data.YEAR}}"
+        },
+        "types": {
+          "Artist name": {
+            "data_type": "string"
+          },
+          "Record company": {
+            "data_type": "string"
+          },
+          "Country": {
+            "data_type": "string"
+          },
+          "Price": {
+            "data_type": "string"
+          },
+          "CD Title": {
+            "data_type": "string"
+          },
+          "Year": {
+            "data_type": "float"
+          },
+          "Concat": {
+            "data_type": "string"
+          }
+        }
+      },
+      "output": {
+        "success": [
+          "JSONFileWriter_1"
+        ],
+        "error": []
+      }
+    },
+    {
+      "id": "JSONFileWriter_1",
+      "type": "JSONFileWriter",
+      "options": {
+        "filepath": "samples/mappingAttributes/result.json"
+      },
+      "output": {
+        "success": [],
+        "error": []
+      }
+    }
+  ]
+}
