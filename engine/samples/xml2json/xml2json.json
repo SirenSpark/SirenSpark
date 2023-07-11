@@ -1,0 +1,41 @@
+{
+  "properties": {
+    "name": "XML Reader",
+    "description": "",
+    "parameters": {}
+  },
+  "trigger": {
+    "id": "creator_1",
+    "type": "creator",
+    "output": {
+      "success": [
+        "XMLReader_1"
+      ]
+    }
+  },
+  "steps": [
+    {
+      "id": "XMLReader_1",
+      "type": "XMLReader",
+      "options": {
+        "filepath": "samples/xml2json/cdCatalog.xml",
+        "xpath": "//CD"
+      },
+      "output": {
+        "success": ["JSONFileWriter_1"],
+        "error": []
+      }
+    },
+    {
+      "id": "JSONFileWriter_1",
+      "type": "JSONFileWriter",
+      "options": {
+        "filepath": "samples/xml2json/result.json"
+      },
+      "output": {
+        "success": [],
+        "error": []
+      }
+    }
+  ]
+}

@@ -35,3 +35,37 @@ In the SirenSpark hub (currently under development), you can create entries on t
 When adding an entry, the SirenSpark team provides an **estimate** and people can contribute to its development.
 
 Similar to other crowdfunding projects, once the funding goal is reached, the functionality is developed and added to the source code.
+
+
+## Usage
+
+### Engine
+
+#### Install
+
+You will need python 3.8 installed with some dependencies
+
+First install dependencies
+
+Debian / Ubuntu :
+```
+sudo apt-get install default-jdk
+sudo apt-get install libpq-dev
+sudo apt-get install gdal-bin
+```
+
+Then install python requirements libs
+
+```
+pip install -r requirements.txt
+```
+
+#### Run a project
+
+Go into the engine dir
+
+`cd engine`
+
+Run `main.py` with a project path as argument
+
+`python main.py samples/xml2json/xml2json.json`
