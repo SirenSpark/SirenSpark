@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO)
 # set path to JDBC driver JAR file
 jars_path = os.path.dirname(os.path.abspath(__file__)) + "/../jars"
 jdbc_driver_path = jars_path + "/postgresql-42.6.0.jar"
-sedona_driver_path = jars_path + "/sedona-spark-shaded-3.0_2.12-1.4.0.jar"
+sedona_driver_path = jars_path + "/sedona-spark-shaded-3.0_2.12-1.5.0.jar"
 geotools_driver_path = jars_path + "/geotools-wrapper-1.4.0-28.2.jar"
 xml_driver_path = jars_path + "/spark-xml_2.12-0.13.0.jar"
 
