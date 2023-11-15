@@ -9,11 +9,13 @@ from readers.json_reader import JSONReader
 from readers.csv_reader import CSVReader
 from readers.xml_reader import XMLReader
 from readers.shapefile_reader import ShapefileReader
+from readers.geojson_reader import GeoJSONReader
 from writers.postgis_writer import PostgisWriter
 from writers.json_file_writer import JSONFileWriter
 from transformers.attribute_creator import AttributeCreator
 from transformers.attribute_mapper import AttributeMapper
 from transformers.joiner import Joiner
+from transformers.closest_point import ClosestPoint
 from pyspark.sql import SparkSession
 import logging
 import json
@@ -79,6 +81,8 @@ class Runner:
             df, types, output = XMLReader(**step.options).run()
         elif step.type == 'ShapefileReader':
             df, types, output = ShapefileReader(**step.options).run()
+        elif step.type == 'GeoJSONReader':
+            df, types, output = GeoJSONReader(**step.options).run()
         elif step.type == 'AttributeCreator':
             df, types, output = AttributeCreator(
                 df=curr_df, types=curr_types, properties=self.properties, **step.options).run()
@@ -106,6 +110,21 @@ class Runner:
                 logging.error(
                     f"Input left and right not defined or has no value: {step.input}")
                 df = False
+        elif step.type == 'ClosestPoint':            
+            if ("left" in step.input and
+                step.input["left"] in self.steps_cache and
+                "right" in step.input and
+                    step.input["right"] in self.steps_cache):
+                df, types, output = ClosestPoint(
+                    left_df=self.steps_cache[step.input["left"]]["values"],
+                    right_df=self.steps_cache[step.input["right"]]["values"],
+                    left_types=self.steps_cache[step.input["left"]]["types"],
+                    right_types=self.steps_cache[step.input["right"]]["types"],
+                    **step.options).run()
+            else:
+                logging.error(
+                    f"Input left and right not defined or has no value: {step.input}")
+                df = False
         else:
             logging.error(f"Type {step.type} not recognized")
             df = False
@@ -120,8 +139,9 @@ class Runner:
                 "values": df.cache(),
                 "types": types
             }
-            print('df.show(10) : ' + str(df.show(10)))
-            print('types : ' + json.dumps(types))
+            # print('types : ' + json.dumps(types))
+            # print('df.show(10) : ' + str(df.show(10)))
+            # print('df.count() : ' + str(df.count()))
 
         time_diff = (datetime.now() - start_time).total_seconds()
         logging.info(f"Total time taken by {step.type}: {time_diff} seconds")

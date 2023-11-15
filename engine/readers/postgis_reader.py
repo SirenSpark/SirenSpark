@@ -65,6 +65,7 @@ class PostgisReader:
         if self.table_limit:
             query1 += " LIMIT " + str(self.table_limit)
 
+        print('Running PostGIS query : ' + str(query1))
         try:
             table_df = self.spark.read.format("jdbc") \
                 .option("url", f"jdbc:postgresql://{self.db_host}:{self.db_port}/{self.db_database}") \
