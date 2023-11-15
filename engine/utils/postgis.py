@@ -40,7 +40,7 @@ def get_table_columns(db_host, db_port, db_database, db_user, db_password, table
     return table_columns
 
 
-def get_column_types(table_columns):
+def get_column_types(table_columns, reproj_srid=None):
     result = {}
     for item in table_columns:
         column_name = item['column_name']
@@ -60,6 +60,8 @@ def get_column_types(table_columns):
                     'srid': item['srid'],
                     'coord_dimension': item['coord_dimension']
                 }
+                if reproj_srid:
+                    result[column_name]['srid'] = reproj_srid
 
     return result
 

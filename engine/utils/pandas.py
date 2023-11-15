@@ -25,10 +25,10 @@ def convertGeomsToText(df, types):
 
   # start Spark session
   spark = SparkSession.builder.appName("SirenSpark").getOrCreate()
-  df.createOrReplaceTempView("v_table")
 
   for key in types:
     if types[key]['data_type'] == 'geometry':
+      df.createOrReplaceTempView("v_table")
       query = f"SELECT *, ST_AsText(ST_GeomFromWKB({key})) as new_sirenspark_geometry FROM v_table"
       df = spark.sql(query)
       df = df.drop(key)

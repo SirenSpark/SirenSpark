@@ -4,11 +4,9 @@ Ajoute une colonne au DataFrame source avec la géométrie du point le plus proc
 """
 from model_base import BaseStep
 from typing import Dict, Any, Optional
-from utils.pandas import toPandas
+from pyspark.sql import SparkSession
+import json
 
-import geopandas as gpd
-from shapely.geometry import Point
-from shapely.ops import nearest_points
 
 class ClosestPointStep(BaseStep):
     type = "ClosestPoint"
@@ -17,6 +15,7 @@ class ClosestPointStep(BaseStep):
         "right_geom_column": str,
         "new_column_name": str
     }
+
 
 class ClosestPoint:
     def __init__(self, left_df, right_df, left_types, right_types, left_geom_column='geom', right_geom_column='geom', new_column_name='closest_point'):
@@ -29,93 +28,33 @@ class ClosestPoint:
         self.new_column_name = new_column_name
 
     def run(self):
+        # start Spark session
+        spark = SparkSession.builder.appName("SirenSpark").getOrCreate()
 
-        left_gdf = toPandas(self.left_df, self.left_types)
-        right_gdf = toPandas(self.right_df, self.right_types)
+        # create temporary views for tables
+        self.left_df.createOrReplaceTempView("v_left")
+        self.right_df.createOrReplaceTempView("v_right")
 
-        # Union des géométries de la right_gdf
-        right_union = gpd.GeoSeries(right_gdf[self.right_geom_column]).unary_union
-        # print('union : ' + str(right_union))
+        # Create a union from right geoms
+        merged_geometry_df = spark.sql(
+            f"SELECT ST_Union_Aggr(ST_GeomFromWKB({self.right_geom_column})) AS merged_geometry FROM v_right")
 
-        def find_nearest_geometry(row, right_df):
-            left_geom = gpd.GeoSeries(row[self.left_geom_column])
-            # Utilise la fonction nearest_points de Shapely pour trouver les points les plus proches
-            nearest = nearest_points(left_geom, right_union)
-            print('nearest : ' + str(nearest))
-            # Renvoie la géométrie correspondante du DataFrame
-            return nearest[1]
-            # return right_df.loc[right_df['geometry'] == nearest[1], 'geometry'].iloc[0]
+        merged_geometry_df.createOrReplaceTempView("v_merged")
 
-        left_gdf['nearest_geom'] = left_gdf.apply(lambda row: find_nearest_geometry(row, right_gdf), axis=1)
+        closest_point_df = spark.sql(
+            f"""
+            SELECT 
+            v_left.*,
+            ST_AsEWKB(ST_ClosestPoint(v_merged.merged_geometry, ST_GeomFromWKB(v_left.{self.left_geom_column}))) as {self.new_column_name}
+            FROM v_left, v_merged
+        """)
 
-        print('left_gdf.head(10) : ' + str(left_gdf.head(10)))
-        # print('right_gdf.head(10) : ' + str(right_gdf.head(10)))
-
-
-        # print('left_gdf[geom].unary_union : ' + str(left_gdf['geom'].unary_union))
-
-        # gpd.GeoSeries()
-
-        # left_gs = gpd.GeoSeries.from_wkt(left_gdf['geom'])
-        # right_gs = gpd.GeoSeries.from_wkt(right_gdf['geometry'])
-
-
-
-        # distance_serie = left_gs.distance(right_gs)
-        # distance_serie = left_gdf.distance(right_gdf)
-
-
-        # pandas_left = self.left_df.toPandas()
-        # right_gdf = self.right_df.toPandas()
-
-
-        # pandas_left['geom'] = gpd.GeoSeries.from_wkb(pandas_left['geom'])
-
-
-        # left_gdf = gpd.GeoDataFrame(pandas_left, geometry='geom')
-
-
-
-        # def find_nearest_geometry(row, right_df):
-        #     left_geom = row['geom']
-        #     # Utilise la fonction nearest_points de Shapely pour trouver les points les plus proches
-        #     nearest = nearest_points(left_geom, right_df['geometry'].unary_union)
-        #     # Renvoie la géométrie correspondante du DataFrame right
-        #     return right_df.loc[right_df['geometry'] == nearest[1], 'geometry'].iloc[0]
-
-
-
-        # left_gdf['nearest_geom'] = left_gdf.apply(lambda row: find_nearest_geometry(row, right_gdf), axis=1)
-
-
-        # print('left_gdf.geom : ' + str(pandas_left['geom']))
-
-        # print('left_gdf.head(10) : ' + str(pandas_left.head(10)))
-
-
-        # # Convert GeoDataFrames to a GeoSeries of points
-        # left_points = left_gdf[self.left_geom_column].apply(lambda geom: geom.representative_point())
-        # right_points = right_gdf[self.right_geom_column].apply(lambda geom: geom.representative_point())
-
-        # # Find the closest point for each left point
-        # closest_points = left_points.apply(lambda point: right_points.distance(point).idxmin())
-        # closest_geometry = self.right_gdf.loc[closest_points][self.right_geom_column]
-
-        # # Add the new column to the left GeoDataFrame
-        # left_gdf[self.new_column_name] = closest_geometry.values
-
-        # print('left_gdf.head(10) : ' + str(left_gdf.head(10)))
-
-
-        # # types = {**self.left_types, **{self.new_column_name: 'geometry'}}
-
-        # # return self.left_gdf, types, 'success'
-
-
-
-
-        closest_point_df = self.left_df.limit(100)
-
-        types = {**self.left_types, **{self.new_column_name: 'string'}}
+        types = {**self.left_types, **{self.new_column_name: {
+            "data_type": "geometry",
+            "pg_data_type": "geometry",
+            "type": "POINT",
+            "srid": self.left_types[self.left_geom_column]['srid'],
+            "coord_dimension": 2
+        }}}
 
         return closest_point_df, types, 'success'

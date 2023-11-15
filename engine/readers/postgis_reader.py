@@ -19,12 +19,13 @@ class PostgisReaderStep(BaseStep):
         "db_password": str,
         "table_name": str,
         "table_limit": Optional[int],
-        "table_filter": Optional[str]
+        "table_filter": Optional[str],
+        "reproj_srid": Optional[int]
     }
 
 
 class PostgisReader:
-    def __init__(self, db_host, db_port, db_database, db_user, db_password, table_name, table_filter=None, table_limit=None):
+    def __init__(self, db_host, db_port, db_database, db_user, db_password, table_name, table_filter=None, table_limit=None, reproj_srid=None):
         self.db_host = db_host
         self.db_port = db_port
         self.db_database = db_database
@@ -33,6 +34,7 @@ class PostgisReader:
         self.table_name = table_name
         self.table_filter = table_filter
         self.table_limit = table_limit
+        self.reproj_srid = reproj_srid
         # start Spark session
         self.spark = SparkSession.builder.appName("SirenSpark").getOrCreate()
 
@@ -40,7 +42,14 @@ class PostgisReader:
         columns = []
         for row in table_columns:
             if row['udt_name'] == 'geometry':
-                query = f"ST_AsEWKB(ST_SetSRID({row['column_name']}, {row['srid']})) as {row['column_name']}"
+
+                query = f"ST_SetSRID({row['column_name']}, {row['srid']})"
+
+                # Option reprojection
+                if self.reproj_srid:
+                    query = f"ST_Transform({query}, {str(self.reproj_srid)})"
+
+                query = f"ST_AsEWKB({query}) as {row['column_name']}"
                 columns.append(query)
             else:
                 columns.append(row['column_name'])
@@ -53,7 +62,7 @@ class PostgisReader:
             self.db_host, self.db_port, self.db_database, self.db_user, self.db_password, self.table_name)
 
         # Column types
-        column_types = get_column_types(table_columns)
+        column_types = get_column_types(table_columns, self.reproj_srid)
 
         # Request columns
         columns = self.get_columns(table_columns)

@@ -1,6 +1,7 @@
 from pyspark.sql import DataFrame
 from model_base import BaseStep
 from typing import Dict, Any, Optional
+from utils.pandas import toPandas, convertGeomsToText
 
 
 class JSONFileWriterStep(BaseStep):
@@ -18,7 +19,9 @@ class JSONFileWriter:
 
     def run(self):
 
-        pandas_df = self.df.toPandas()
+        new_df = convertGeomsToText(self.df, self.types)
+
+        pandas_df = new_df.toPandas()
         json_data = pandas_df.to_json(orient='records')
 
         with open(self.filepath, 'w') as file:
