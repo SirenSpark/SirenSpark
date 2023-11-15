@@ -41,6 +41,16 @@ class ClosestPoint:
 
         merged_geometry_df.createOrReplaceTempView("v_merged")
 
+        # closest_point_df = spark.sql(
+        # f"""
+        #     SELECT
+        #     v_left.*,
+        #     ST_AsText(ST_GeomFromWKB(v_left.{self.left_geom_column})) as geom2,
+        #     ST_AsText(ST_ClosestPoint(v_merged.merged_geometry, ST_GeomFromWKB(v_left.{self.left_geom_column}))) as closest_point,
+        #     ST_Azimuth(ST_GeomFromWKB(v_left.{self.left_geom_column}), ST_ClosestPoint(v_merged.merged_geometry, ST_GeomFromWKB(v_left.{self.left_geom_column}))) as rotation
+        #     FROM v_left, v_merged
+        # """)
+
         closest_point_df = spark.sql(
             f"""
             SELECT 

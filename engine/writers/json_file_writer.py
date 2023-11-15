@@ -22,7 +22,7 @@ class JSONFileWriter:
 
         new_df = convertGeomsToText(self.df, self.types)
 
-        pandas_df = new_df.toPandas()
+        pandas_df = new_df.fillna(0).toPandas()
 
         for key in self.types:
             if self.types[key]['data_type'] == 'array_json':

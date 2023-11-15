@@ -17,6 +17,7 @@ from transformers.attribute_mapper import AttributeMapper
 from transformers.joiner import Joiner
 from transformers.array_joiner import ArrayJoiner
 from transformers.closest_point import ClosestPoint
+from transformers.calc_rotation import CalcRotation
 from pyspark.sql import SparkSession
 import logging
 import json
@@ -141,6 +142,9 @@ class Runner:
                 logging.error(
                     f"Input left and right not defined or has no value: {step.input}")
                 df = False
+        elif step.type == 'CalcRotation':
+            df, types, output = CalcRotation(
+                df=curr_df, types=curr_types, properties=self.properties, **step.options).run()
         else:
             logging.error(f"Type {step.type} not recognized")
             df = False
