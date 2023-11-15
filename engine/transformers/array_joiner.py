@@ -1,13 +1,9 @@
-"""
-ArrayJoin
-Effectue une jointure pour relations 1-n
-"""
+from pyspark.sql import functions as F
 from model_base import BaseStep
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, collect_list, array_join, to_json
+from pyspark.sql.functions import col
 from pyspark.sql.types import StructType, StructField, StringType
-import json
 
 
 class ArrayJoinerStep(BaseStep):
@@ -30,26 +26,38 @@ class ArrayJoiner:
         self.new_column_name = new_column_name
 
     def run(self):
-        # start Spark session
-        spark = SparkSession.builder.appName("SirenSpark").getOrCreate()
+        # Prefixe toutes les colonnes de right_df
+        prefix = 'sirenspark_array_joiner_right_'
+        for col_name in self.right_df.columns:
+            self.right_df = self.right_df.withColumnRenamed(
+                col_name, prefix + col_name)
 
-        self.right_df.createOrReplaceTempView("v_right")
+        # Effectuer la jointure
+        joined_df = self.left_df.alias("left").join(
+            self.right_df.alias("right"),
+            col("left." + self.left_join_column) == col(
+                "right." + prefix + self.right_join_column),
+            "left_outer"
+        )
 
-        output_data = []
-        data_collect = self.left_df.collect()
-        for row in data_collect:
-            row = row.asDict()
-            query = f"SELECT * from v_right where {self.right_join_column} = '{row[self.left_join_column]}'"
-            row[self.new_column_name] = spark.sql(query).toJSON().collect()
-            output_data.append(row)
+        # Collecter les résultats au format JSON
+        json_col = F.to_json(F.struct([col(c) for c in self.right_df.columns]))
+        joined_df = joined_df.groupBy(self.left_df.columns).agg(
+            F.collect_list(json_col).alias(self.new_column_name))
 
-        schema = StructType(self.left_df.schema.fields +
-                            [StructField(self.new_column_name, StringType(), True)])
+        # Supprimer le préfixe du JSON dans la colonne nouvellement créée
+        joined_df = joined_df.withColumn(
+            self.new_column_name, F.expr(f"transform({self.new_column_name}, x -> regexp_replace(x, '{prefix}', ''))"))
 
-        newdf = spark.createDataFrame(output_data, schema)
+        # Créer le DataFrame final avec les colonnes préfixées
+        newdf = joined_df.select(
+            *[F.col("left." + col_name).alias(col_name)
+              for col_name in self.left_df.columns],
+            F.col(self.new_column_name).alias(self.new_column_name)
+        ).distinct()
 
         types = {**self.left_types, **{self.new_column_name: {
-            "data_type": "json",
+            "data_type": "array_json",
             "pg_data_type": "text",
         }}}
 

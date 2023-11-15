@@ -15,6 +15,7 @@ from writers.json_file_writer import JSONFileWriter
 from transformers.attribute_creator import AttributeCreator
 from transformers.attribute_mapper import AttributeMapper
 from transformers.joiner import Joiner
+from transformers.array_joiner import ArrayJoiner
 from transformers.closest_point import ClosestPoint
 from pyspark.sql import SparkSession
 import logging
@@ -101,6 +102,21 @@ class Runner:
                 "right" in step.input and
                     step.input["right"] in self.steps_cache):
                 df, types, output = Joiner(
+                    left_df=self.steps_cache[step.input["left"]]["values"],
+                    right_df=self.steps_cache[step.input["right"]]["values"],
+                    left_types=self.steps_cache[step.input["left"]]["types"],
+                    right_types=self.steps_cache[step.input["right"]]["types"],
+                    **step.options).run()
+            else:
+                logging.error(
+                    f"Input left and right not defined or has no value: {step.input}")
+                df = False
+        elif step.type == 'ArrayJoiner':
+            if ("left" in step.input and
+                step.input["left"] in self.steps_cache and
+                "right" in step.input and
+                    step.input["right"] in self.steps_cache):
+                df, types, output = ArrayJoiner(
                     left_df=self.steps_cache[step.input["left"]]["values"],
                     right_df=self.steps_cache[step.input["right"]]["values"],
                     left_types=self.steps_cache[step.input["left"]]["types"],
