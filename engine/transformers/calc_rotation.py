@@ -40,16 +40,11 @@ class CalcRotation:
             geom_1 = loads(row[self.geom_column_1])
             geom_2 = loads(row[self.geom_column_2])
 
-            # Assuming you are working with 2D geometries, you can use the angle formula
-            angle = math.degrees(math.atan2(
-                geom_2.y - geom_1.y, geom_2.x - geom_1.x))
-
-            angles.append(angle)
+            angles.append(self.calcRotation(geom_1, geom_2))
 
         pandas_df[self.new_column_name] = angles
 
         pandas_df = pandas_df[new_df.columns + [self.new_column_name]]
-
 
         # Transformation du df pandas en df spark
         spark = SparkSession.builder.appName("SirenSpark").getOrCreate()
@@ -67,3 +62,49 @@ class CalcRotation:
         }}}
 
         return spark_df, types, 'success'
+
+    def calcRotation(self, geom_1, geom_2):
+        point1 = [geom_1.x, geom_1.y, 0]
+        point2 = [geom_2.x, geom_2.y, 0]
+
+        angle_degres = self.angle_entre_deux_points(point1, point2)
+
+        return angle_degres
+
+    # Fonction pour calculer le vecteur entre deux points
+    def calculer_vecteur(self, point1, point2):
+        return [point1[0] - point2[0], point1[1] - point2[1], point1[2] - point2[2]]
+
+    # Fonction pour calculer la norme d'un vecteur
+    def norme_vecteur(self, vecteur):
+        return math.sqrt(vecteur[0] * vecteur[0] + vecteur[1] * vecteur[1] + vecteur[2] * vecteur[2])
+
+    # Fonction pour calculer l'angle en degrés entre trois points
+    def angle_entre_deux_points(self, point1, point2):
+
+        # Création d'un troisième point au-dessus du point 1
+        point0 = [point1[0], point1[1] + 1, point1[2]]
+
+        # Calcul des vecteurs entre les points
+        vecteurA = self.calculer_vecteur(point0, point1)
+        vecteurB = self.calculer_vecteur(point2, point1)
+
+        # Calcul du produit scalaire
+        dot_product = vecteurA[0] * vecteurB[0] + \
+            vecteurA[1] * vecteurB[1] + vecteurA[2] * vecteurB[2]
+
+        # Calcul des normes des vecteurs
+        normeA = self.norme_vecteur(vecteurA)
+        normeB = self.norme_vecteur(vecteurB)
+
+        # Calcul de l'angle en radians
+        angle_radians = math.acos(dot_product / (normeA * normeB))
+
+        # Conversion en degrés
+        angle_degres = angle_radians * (180 / math.pi)
+
+        # Calcul de la direction
+        if vecteurB[0] < 0:
+            angle_degres = 360 - angle_degres
+
+        return round(angle_degres)
