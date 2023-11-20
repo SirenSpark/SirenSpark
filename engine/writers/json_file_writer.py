@@ -26,7 +26,7 @@ class JSONFileWriter:
 
         for key in self.types:
             if self.types[key]['data_type'] == 'array_json':
-                pandas_df[key].apply(self.parse_json_column)
+                pandas_df[key] = pandas_df[key].apply(self.parse_json_column)
 
         json_data = pandas_df.to_json(orient='records')
 
@@ -36,9 +36,15 @@ class JSONFileWriter:
         return self.df, self.types, 'success'
     
     def parse_json_column(self, arr_json_str):
-        for key, value in enumerate(arr_json_str):
+        if isinstance(arr_json_str, list):
+            for key, value in enumerate(arr_json_str):
+                try:
+                    arr_json_str[key] = json.loads(value.replace("\\", ""))
+                except:
+                    pass
+        elif isinstance(arr_json_str, str):
             try:
-                arr_json_str[key] = json.loads(value.replace("\\", ""))
+                return json.loads(arr_json_str)
             except:
                 pass
 
