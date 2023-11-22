@@ -88,7 +88,7 @@ class ShapefileReader:
             srid = int(spatial_ref.GetAuthorityCode(None))
             proj = str(spatial_ref.GetAuthorityName(None))
 
-            column_types['geometry'] = {"data_type": "geometry", "srid": srid, "coord_dimension": num_dims, "proj_name": proj}
+            column_types['geometry'] = {"data_type": "geometry", "srid": srid, "coord_dimension": num_dims, "proj_name": f"{proj}:{srid}"}
             if geometry.GetGeometryType() == ogr.wkbPoint:
                 column_types['geometry']['type'] = "POINT"
             elif geometry.GetGeometryType() == ogr.wkbLineString:
@@ -105,7 +105,7 @@ class ShapefileReader:
                 column_types['geometry']['type'] = "GEOMETRY"
 
             # Transforms geometry format
-            df = df.selectExpr("*", f"ST_AsEWKB(ST_SetSRID(ST_GeomFromWKT(geometry), {srid})) AS new_sirenspark_geometry")
+            df = df.selectExpr("*", f"ST_AsEWKB(ST_transform(ST_SetSRID(ST_GeomFromWKT(geometry), {srid}), '{proj}:{srid}', 'EPSG:4326')) AS new_sirenspark_geometry")
             df = df.drop("geometry")
             df = df.withColumnRenamed("new_sirenspark_geometry", "geometry")
 
