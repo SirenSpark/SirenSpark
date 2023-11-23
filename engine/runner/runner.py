@@ -21,6 +21,7 @@ from transformers.array_joiner import ArrayJoiner
 from transformers.closest_point import ClosestPoint
 from transformers.calc_rotation import CalcRotation
 from transformers.python_caller import PythonCaller
+from transformers.merge_buffer import MergeBuffer
 from pyspark.sql import SparkSession
 import logging
 import json
@@ -156,6 +157,9 @@ class Runner:
                 df=curr_df, types=curr_types, properties=self.properties, **step.options).run()
         elif step.type == 'PythonCaller':
             df, types, output = PythonCaller(
+                df=curr_df, types=curr_types, properties=self.properties, **step.options).run()
+        elif step.type == 'MergeBuffer':
+            df, types, output = MergeBuffer(
                 df=curr_df, types=curr_types, properties=self.properties, **step.options).run()
         else:
             logging.error(f"Type {step.type} not recognized")

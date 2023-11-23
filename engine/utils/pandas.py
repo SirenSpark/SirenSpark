@@ -17,7 +17,18 @@ def toPandas(df, types):
             geom_column = key
             pandas_df[key] = gpd.GeoSeries.from_wkt(pandas_df[key])
 
-    return gpd.GeoDataFrame(pandas_df, geometry=geom_column)
+    return gpd.GeoDataFrame(pandas_df, geometry=geom_column, crs=4326)
+
+
+def toSpark(pandas_df, types, schema=None):
+
+    for key in types:
+        if types[key]['data_type'] == 'geometry':
+            pandas_df[key] = gpd.GeoSeries.to_wkb(pandas_df[key])
+
+    spark = SparkSession.builder.appName("SirenSpark").getOrCreate()
+    spark_df = spark.createDataFrame(pandas_df, schema)
+    return spark_df
 
 
 def convertGeomsToText(df, types):
