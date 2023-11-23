@@ -12,6 +12,8 @@ from readers.shapefile_reader import ShapefileReader
 from readers.geojson_reader import GeoJSONReader
 from writers.postgis_writer import PostgisWriter
 from writers.json_file_writer import JSONFileWriter
+from writers.geojson_file_writer import GeoJSONFileWriter
+from writers.shapefile_writer import ShapefileWriter
 from transformers.attribute_creator import AttributeCreator
 from transformers.attribute_mapper import AttributeMapper
 from transformers.joiner import Joiner
@@ -97,6 +99,12 @@ class Runner:
                 df=curr_df, types=curr_types, **step.options).run()
         elif step.type == 'JSONFileWriter':
             df, types, output = JSONFileWriter(
+                df=curr_df, types=curr_types, **step.options).run()
+        elif step.type == 'GeoJSONFileWriter':
+            df, types, output = GeoJSONFileWriter(
+                df=curr_df, types=curr_types, **step.options).run()
+        elif step.type == 'ShapefileWriter':
+            df, types, output = ShapefileWriter(
                 df=curr_df, types=curr_types, **step.options).run()
         elif step.type == 'Joiner':
             if ("left" in step.input and
