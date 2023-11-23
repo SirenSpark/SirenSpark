@@ -8,3 +8,4 @@ gdal
 ogr
 pandas
 geopandas
+tqdm

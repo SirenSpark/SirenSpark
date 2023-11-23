@@ -8,6 +8,7 @@ from shapely.wkt import loads
 from utils.pandas import toPandas, convertGeomsToText, convertGeomsToBinary
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, StringType, NumericType, IntegerType
+from tqdm import tqdm
 import math
 
 
@@ -36,7 +37,7 @@ class CalcRotation:
 
         angles = []
 
-        for index, row in pandas_df.iterrows():
+        for index, row in tqdm(pandas_df.iterrows(), total=len(pandas_df), desc="Processing features", unit="row"):
             geom_1 = loads(row[self.geom_column_1])
             geom_2 = loads(row[self.geom_column_2])
 

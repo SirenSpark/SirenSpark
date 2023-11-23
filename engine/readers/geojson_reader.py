@@ -5,18 +5,23 @@ Effectue une lecture sur un fichier GeoJSON en utilisant gdal
 import logging
 from osgeo import ogr
 from pyspark.sql import SparkSession
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from model_base import BaseStep
+from tqdm import tqdm
+
 
 class GeoJSONReaderStep(BaseStep):
     type = "GeoJSONReader"
     options: Dict[str, Any] = {
-        "filepath": str
+        "filepath": str,
+        "geom_type": Optional[str]
     }
 
+
 class GeoJSONReader:
-    def __init__(self, filepath):
+    def __init__(self, filepath, geom_type=None):
         self.filepath = filepath
+        self.geom_type = geom_type
 
     def run(self):
         spark = SparkSession.builder.appName("SirenSpark").getOrCreate()
@@ -38,7 +43,8 @@ class GeoJSONReader:
         num_dims = 2
 
         # Loop through the features in the layer
-        for feature in layer:
+        for feature in tqdm(layer, desc="Processing features", unit="feature"):
+
             # Get the feature's geometry
             geometry = feature.GetGeometryRef()
 
@@ -48,14 +54,22 @@ class GeoJSONReader:
             # Get the feature's attributes
             attributes = feature.items()
 
+            # Filter entities based on geom_type
+            if self.geom_type is not None:
+                if geometry.GetGeometryType() != ogr.wkbUnknown and self.geom_type.lower() not in geometry.GetGeometryName().lower():
+                    continue
+
             # Add the data to the list
             if num_dims == 2:
-                data.append((geometry.ExportToWkt(),) + tuple(attributes.values()))
+                data.append((geometry.ExportToWkt(),) +
+                            tuple(attributes.values()))
             elif num_dims == 3:
-                data.append((geometry.ExportToWkt(),) + tuple(attributes.values()))
+                data.append((geometry.ExportToWkt(),) +
+                            tuple(attributes.values()))
 
         # Create a schema for the DataFrame
-        fields = ["geometry"] + [field_defn.name for field_defn in layer.schema]
+        fields = ["geometry"] + \
+            [field_defn.name for field_defn in layer.schema]
         schema = ",".join([f"`{field}` STRING" for field in fields])
 
         # Create the DataFrame
@@ -89,7 +103,8 @@ class GeoJSONReader:
             srid = int(spatial_ref.GetAuthorityCode(None))
             proj = str(spatial_ref.GetAuthorityName(None))
 
-            column_types['geometry'] = {"data_type": "geometry", "srid": srid, "coord_dimension": num_dims, "proj_name": proj}
+            column_types['geometry'] = {
+                "data_type": "geometry", "srid": srid, "coord_dimension": num_dims, "proj_name": proj}
             if geometry.GetGeometryType() == ogr.wkbPoint:
                 column_types['geometry']['type'] = "POINT"
             elif geometry.GetGeometryType() == ogr.wkbLineString:
@@ -106,7 +121,8 @@ class GeoJSONReader:
                 column_types['geometry']['type'] = "GEOMETRY"
 
             # Transforms geometry format
-            df = df.selectExpr("*", f"ST_AsEWKB(ST_SetSRID(ST_GeomFromWKT(geometry), {srid})) AS new_sirenspark_geometry")
+            df = df.selectExpr(
+                "*", f"ST_AsEWKB(ST_SetSRID(ST_GeomFromWKT(geometry), {srid})) AS new_sirenspark_geometry")
             df = df.drop("geometry")
             df = df.withColumnRenamed("new_sirenspark_geometry", "geometry")
 
